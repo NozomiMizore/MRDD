@@ -300,7 +300,7 @@ def main():
                         wandb.log({'samples': wandb.Image(sample_grid)}, step=epoch)
                 
                 # Checkpoint
-                # save_checkpoint(config, checkpoint_path, model, optimizer, None, epoch)
+                # save_checkpoint(config, checkpoint_path, model, optimizer, None, epoch) # 添加：保存检查点
             if use_ddp:    
                 dist.barrier()
         

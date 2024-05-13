@@ -31,7 +31,7 @@ MANIFEST
 #  before PyInstaller builds the exe, so as to inject date/other infos into it.
 *.manifest
 *.spec
-
+*.pth
 # Installer logs
 pip-log.txt
 pip-delete-this-directory.txt
@@ -168,6 +168,7 @@ activate_env
 # for compression data.
 *.npz
 src/data/
+src/MyData/
 src/experiments
 todo.md
 src/vis_single_embedding.py
@@ -184,3 +185,4 @@ local_test
 
 # Do not record wandb logs.
 wandb
+src/wandb

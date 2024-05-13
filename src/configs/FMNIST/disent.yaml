@@ -1,7 +1,7 @@
 # general setting.
 views: 2
 seed: 3407
-wandb: false
+wandb: True
 experiment_name: "fmnist"
 verbose: false
 note: 'disentangling'
@@ -17,7 +17,8 @@ dataset:
 train:
   epochs: 200
   # 64, 128, 512, 1024
-  devices: [0, 1]
+  # devices: [0, 1]
+  devices: [0]
   batch_size: 1024
   optim: "adamw"
   num_workers: 8
@@ -42,7 +43,7 @@ consistency:
   num_res_blocks: 3
   kld_weight: 0.1
   alpha: 1.0
-  consistency_encoder_path: 'final_model-8527.pth'
+  consistency_encoder_path: './experiments/fmnist/consist-c10-m0.8/final_model-8527.pth'
 
 vspecific:
   v_dim: 10

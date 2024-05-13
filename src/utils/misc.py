@@ -80,12 +80,12 @@ def reproducibility_setting(seed):
     set the random seed to make sure reproducibility.
     """
     np.random.seed(seed)
-    torch.manual_seed(seed)
+    torch.manual_seed(seed) #确保PyTorch库中随机数生成器在CPU上生成的随机数序列是可重复的
     if torch.cuda.is_available():
-        torch.cuda.manual_seed(seed)
-        torch.backends.cudnn.deterministic = True
-        torch.backends.cudnn.benchmark = False
-        torch.cuda.manual_seed_all(seed)
+        torch.cuda.manual_seed(seed) # 确保PyTorch库中随机数生成器在GPU上生成的随机数序列是可重复的
+        torch.backends.cudnn.deterministic = True # 启用确定性算法，确保在相同输入下，cuDNN 的输出结果是一致的
+        torch.backends.cudnn.benchmark = False # 禁用cuDNN的自动寻找最佳卷积算法功能，确保在相同网络结构和输入下，cuDNN 的输出结果是一致的
+        torch.cuda.manual_seed_all(seed) # 设置所有可用的CUDA设备的随机数种子
 
     print('Global seed:', seed)
 

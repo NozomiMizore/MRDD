@@ -211,9 +211,12 @@ def align_office31(root):
             save_image(t_image, new_path)
 
     views_mapping = {
-        'A': 'amazon/images',
-        'D': 'dslr/images',
-        'W': 'webcam/images'
+        # 'A': 'amazon/images',
+        # 'D': 'dslr/images',
+        # 'W': 'webcam/images'
+        'A': 'amazon',
+        'D': 'dslr',
+        'W': 'webcam'
     }
 
     classes = ['paper_notebook', 'desktop_computer', 'punchers', 'desk_lamp', 'tape_dispenser',
@@ -251,9 +254,12 @@ def align_office31(root):
         item_D = glob(f"{root}/{views_mapping['D']}/{c}/*.jpg")
         item_W = glob(f"{root}/{views_mapping['W']}/{c}/*.jpg")
         
-        A_path += [p[len(root):] for p in item_A]
-        D_path += [p[len(root):] for p in item_D]
-        W_path += [p[len(root):] for p in item_W]
+        # A_path += [p[len(root):] for p in item_A]
+        # D_path += [p[len(root):] for p in item_D]
+        # W_path += [p[len(root):] for p in item_W]
+        A_path += [p for p in item_A]
+        D_path += [p for p in item_D]
+        W_path += [p for p in item_W]
         targets += ([idx] * len(item_A))
         
     X = np.c_[[A_path, D_path, W_path]].T
@@ -690,7 +696,9 @@ def get_val_dataset(args, transform):
 
 if __name__ == '__main__':
     # dataset = MultiViewClothingDataset(train=False, views=3)
-    dataset = COIL100Dataset(root='/home/xyzhang/guanzhouke/MyData', train=True, views=4)
+    # dataset = COIL100Dataset(root='/home/xanxy/MRDD/src/MyData', train=True, views=4)
+    # align_office31(root='/home/xanxy/MRDD/src/MyData/Office31')
+    dataset = Office31(root='/home/xanxy/MRDD/src/MyData/Office31', train=True, views=3)
     print(dataset[0])
     pass
     # generate_mvc_dataset('/mnt/disk3/data/mvc-10', views=2)

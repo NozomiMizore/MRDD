@@ -1,7 +1,7 @@
 # general setting.
 views: 3
 seed: 3407
-wandb: false
+wandb: True
 experiment_name: "coil100"
 verbose: false
 project_name: 'CVPR24'
@@ -31,7 +31,7 @@ train:
 
 consistency:
   continous: True
-  c_dim: 10
+  c_dim: 20
   in_channel: 3
   ch_mult: [1, 2, 4, 8]
   block_size: 8
@@ -40,7 +40,7 @@ consistency:
   num_res_blocks: 3
   kld_weight: 1.0
   alpha: 1.0
-  consistency_encoder_path: '4560.pth'
+  consistency_encoder_path: './experiments/coil100/consist-c20-m0.7/final_model-3407.pth'
 
 vspecific:
   v_dim: 10

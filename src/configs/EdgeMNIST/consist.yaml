@@ -1,7 +1,7 @@
 # general setting.
 views: 2
 seed: 3407
-wandb: false
+wandb: True
 experiment_name: "emnist"
 verbose: false
 project_name: 'CVPR24'

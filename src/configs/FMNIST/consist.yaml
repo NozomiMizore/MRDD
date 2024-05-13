@@ -1,7 +1,7 @@
 # general setting.
 views: 2
 seed: 8527
-wandb: false
+wandb: True
 experiment_name: "fmnist"
 verbose: false
 note: 'mining consistency'
@@ -17,8 +17,10 @@ dataset:
 train:
   epochs: 200
   # 64, 128, 512, 1024
-  devices: [0, 1]
-  batch_size: 2048
+  # devices: [0, 1]
+  devices: [0]
+  # batch_size: 2048
+  batch_size: 512
   optim: "adamw"
   num_workers: 8
   lr: 0.0005

@@ -4,9 +4,6 @@ from torch.nn import functional as F
 import numpy as np
 import torch.distributions as dist
 
-# import sys
-# sys.path.append('/home/xyzhang/guanzhouke/cvpr24/src/models')
-# from autoencoder import Encoder, Decoder
 from .autoencoder import Encoder, Decoder
 from .resnet import resnet18, resnet34, resnet50
 from utils import mask_image
