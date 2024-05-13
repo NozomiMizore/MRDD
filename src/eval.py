@@ -38,8 +38,11 @@ def clustering_accuracy(y_true, y_pred):
     assert y_pred.size == y_true.size
     D = max(y_pred.max(), y_true.max()) + 1
     w = np.zeros((D, D), dtype=np.int64)
+    # 遍历预测标签和真实标签，填充混淆矩阵
     for i in range(y_pred.size):
         w[y_pred[i], y_true[i]] += 1
+    # 聚类算法通常只关心数据的内在结构，而不关心标签的具体取值， 因此，即使两个簇的标签不同，它们可能在内部结构上非常相似
+    # 可以使用匈牙利算法来找到真实标签和预测标签之间的最佳匹配，从而得以计算聚类的准确度
     ind = linear_sum_assignment(w.max() - w)
     ind = np.asarray(ind)
     ind = np.transpose(ind)
@@ -82,6 +85,9 @@ def classification_metric(y_true, y_pred, average='macro', verbose=True, decimal
 
 @torch.no_grad()
 def reconstruction(model, original):
+    """
+    生成一致性网络和视图特定网格
+    """
     vspecific_recons = model(original)
     consist_recons, _ = model.consis_enc(original)
     grid = []
@@ -98,6 +104,9 @@ def reconstruction(model, original):
 
 @torch.no_grad()
 def extract_features(val_dataloader, model, device):
+    """
+    从验证集dataloader中提取特征
+    """
     targets = []
     consist_reprs = []
     vspecific_reprs = []
@@ -105,6 +114,7 @@ def extract_features(val_dataloader, model, device):
     all_vs = []
     for Xs, target in val_dataloader:
         Xs = [x.to(device) for x in Xs]
+        # 使用模型获取一致表征、最佳视图特定表征、最佳拼接表征、所有视图特定表征
         consist_repr_, vspecific_repr_, concate_repr_, all_v = model.all_features(Xs)
         targets.append(target)
         consist_reprs.append(consist_repr_.detach().cpu())
@@ -112,6 +122,7 @@ def extract_features(val_dataloader, model, device):
         concate_reprs.append(concate_repr_.detach().cpu())
         all_vs.append(all_v)
     targets = torch.concat(targets, dim=-1).numpy()
+    # vstack用于垂直（沿着行方向）堆叠张量
     consist_reprs = torch.vstack(consist_reprs).detach().cpu()
     vspecific_reprs = torch.vstack(vspecific_reprs).detach().cpu()
     concate_reprs = torch.vstack(concate_reprs).detach().cpu()
@@ -213,12 +224,13 @@ def main():
         dl = DataLoader(train_dataset, 32, shuffle=True)
         recon_samples = next(iter(dl))[0]
         recon_samples = [x.to(device, non_blocking=True) for x in recon_samples]
+        # 使用模型进行重建，得到一致性和视图特定的重建图像
         consist_grid, vspec_grid = reconstruction(model, recon_samples)
         save_image(consist_grid, os.path.join(config.train.log_dir, f'{config.dataset.name}-consist-recons.{pic_format}'), format=pic_format)
         save_image(vspec_grid, os.path.join(config.train.log_dir, f'{config.dataset.name}-vspec-recons.{pic_format}'), format=pic_format)
         
         
-        # tsne
+        # 使用 t-SNE 进行降维可视化
         tsne_samples = 2000
         
         idx = torch.rand(consistency.size(0)).argsort()
@@ -263,6 +275,7 @@ def report(run_times, n_clusters, need_classification, labels, z):
     cls_p = []
     cls_fs = []
     
+    # 重复执行聚类/分类算法，记录每次运行的性能指标
     for run in range(run_times):
         km = KMeans(n_clusters=n_clusters, n_init='auto')
         preds = km.fit_predict(z)

@@ -3,7 +3,8 @@ from torch.optim import lr_scheduler
 
 class LARS(torch.optim.Optimizer):
     """
-    LARS optimizer, no rate scaling or weight decay for parameters <= 1D.
+    LARS optimizer(Layer-wise Adaptive Rate Scaling), 
+    no rate scaling or weight decay for parameters <= 1D.
     # Copyright (c) Facebook, Inc. and its affiliates.
     # All rights reserved.
 
@@ -24,7 +25,7 @@ class LARS(torch.optim.Optimizer):
 
                 if dp is None:
                     continue
-
+                # 对于维度大于1的参数（即不是标准化 gamma/beta 或偏置），根据 LARS 算法计算更新梯度
                 if p.ndim > 1: # if not normalization gamma/beta or bias
                     dp = dp.add(p, alpha=g['weight_decay'])
                     param_norm = torch.norm(p)
@@ -35,7 +36,7 @@ class LARS(torch.optim.Optimizer):
                                     (g['trust_coefficient'] * param_norm / update_norm), one),
                                     one)
                     dp = dp.mul(q)
-
+                # 维护参数的状态，包括动量 mu
                 param_state = self.state[p]
                 if 'mu' not in param_state:
                     param_state['mu'] = torch.zeros_like(p)
@@ -60,6 +61,13 @@ def get_optimizer(params, lr=1e-3, op_name='adam'):
 
 
 def get_scheduler(args, optimizer):
+    """
+    根据指定的调度器类型和训练参数，选择相应的学习率调度器：
+    如果调度器类型是 'constant'，则返回 None 表示不使用学习率调度器。
+    如果调度器类型是 'linear'，则创建一个线性调度器，逐渐降低学习率。
+    如果调度器类型是 'cosine'，则创建一个余弦退火调度器。
+    否则，返回 None
+    """
     if args.train.scheduler == 'constant':
         return None
     elif args.train.scheduler == 'linear':

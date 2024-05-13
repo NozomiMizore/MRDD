@@ -9,8 +9,8 @@ import os
 
 import cv2
 # provent the depandency of multiple threads.
-cv2.ocl.setUseOpenCL(False)
-cv2.setNumThreads(0)
+cv2.ocl.setUseOpenCL(False) # cv2使用opencl和cuda一起用的时候通常会拖慢速度
+cv2.setNumThreads(0) # cv2在做resize等op的时候会用多线程，当torch的dataloader是多进程的时候，多进程套多线程，很容易就卡死了
 
 
 # -------------------------------------------------------------------------------
@@ -24,7 +24,7 @@ def plain_transforms(img):
     """
     return img
 
-
+# coil数据集每个物体有72个视角拍摄的图片，随机每3个组成一组view，每个物体有24组，从24组里随机切分train和test
 def coil(root, n_objs=20, n_views=3):
     """
     Download: 
@@ -73,12 +73,12 @@ def coil(root, n_objs=20, n_views=3):
                             data_dir, f"obj{obj + 1}__{idx * 5}.png")
                         img = imread(fname)
                     if n_objs == 100:
-                        img = np.transpose(img, (2, 0, 1))
+                        img = np.transpose(img, (2, 0, 1)) # 将channel提到第一维
                     sub_view.append(img)
                 obj_list.append(np.array(sub_view))
             views.append(np.array(obj_list))
         views = np.array(views)
-        views = np.transpose(views, (1, 0, 2, 3, 4, 5)
+        views = np.transpose(views, (1, 0, 2, 3, 4, 5) # 把view提到第一维
                             ).reshape(n_views, n, *img_size)
         cp = views.reshape(-1, *img_size)
         # print(cp.shape)
@@ -93,27 +93,34 @@ def coil(root, n_objs=20, n_views=3):
 
 
 def get_train_transformations(args, task='pretext'):
-    need_hflip = args['training_augmentation'].hflip
+    """
+    根据任务类型返回不同的训练数据增强策略，
+    如果任务类型是 'standard'，则使用标准的数据增强策略，包括随机裁剪并调整大小以及可能的随机水平翻转。
+    如果任务类型是 'pretext'，则使用 SimCLR 论文中描述的数据增强策略，包括随机裁剪并调整大小、随机水平翻转、随机颜色扭曲、随机灰度，并最终将图像转换为张量。
+    args:参数配置
+    task:任务类型
+    """
+    need_hflip = args['training_augmentation'].hflip # 检查是否需要水平翻转
     if task == 'standard':
         # Standard augmentation strategy
         return transforms.Compose([
             transforms.RandomResizedCrop(
-                **args['training_augmentation']['random_resized_crop']),
-            transforms.RandomHorizontalFlip() if need_hflip else plain_transforms,
+                **args['training_augmentation']['random_resized_crop']), # 随机裁剪并调整大小
+            transforms.RandomHorizontalFlip() if need_hflip else plain_transforms, # 随机水平翻转
             transforms.ToTensor()
         ])
     elif task == 'pretext':
         # Augmentation strategy from the SimCLR paper
         return transforms.Compose([
             transforms.RandomResizedCrop(
-                **args['training_augmentation']['random_resized_crop']),
-            transforms.RandomHorizontalFlip() if need_hflip else plain_transforms,
+                **args['training_augmentation']['random_resized_crop']), # 随机裁剪并调整大小
+            transforms.RandomHorizontalFlip() if need_hflip else plain_transforms, # 随机水平翻转
             transforms.RandomApply([
                 transforms.ColorJitter(
                     **args['training_augmentation']['color_jitter'])
-            ], p=args['training_augmentation']['color_jitter_random_apply']['p']),
+            ], p=args['training_augmentation']['color_jitter_random_apply']['p']), # 随机应用颜色扭曲
             transforms.RandomGrayscale(
-                **args['training_augmentation']['random_grayscale']),
+                **args['training_augmentation']['random_grayscale']), # 随机灰度
             transforms.ToTensor(),
         ])
     else:
@@ -121,6 +128,9 @@ def get_train_transformations(args, task='pretext'):
 
 
 def get_val_transformations(args):
+    """
+    为验证准备数据转换(Resize图片)的流程
+    """
     return transforms.Compose([
         transforms.Resize((args.valid_augmentation.crop_size, args.valid_augmentation.crop_size)),
         transforms.ToTensor()])
@@ -140,9 +150,9 @@ def image_edge(img):
     :return:
     """
     img = np.array(img)
-    dilation = cv2.dilate(img, np.ones((3, 3), np.uint8), iterations=1)
-    edge = dilation - img
-    return edge
+    dilation = cv2.dilate(img, np.ones((3, 3), np.uint8), iterations=1) # 膨胀操作，增强边缘
+    edge = dilation - img # 提取边缘
+    return edge 
 
 
 def generate_tiny_dataset(name, dataset, sample_num=100):
@@ -165,9 +175,9 @@ def generate_tiny_dataset(name, dataset, sample_num=100):
         x2s.append(x2)
         ys.append(yy)
 
-    x1s = torch.vstack(x1s)
+    x1s = torch.vstack(x1s) # 将列表中的张量纵向堆叠
     x2s = torch.vstack(x2s)
-    ys = torch.concat(ys)
+    ys = torch.concat(ys) # 将列表中的张量进行拼接
 
     tiny_dataset = {
         "x1": x1s,
@@ -189,6 +199,8 @@ def align_office31(root):
     """
     This function will auto fill the lack data by color jitter method.
     The original Office dataset has 4,110 items. After alignment, it has 8,451 items
+    用颜色扭曲方法填补数据集的不足，即遍历每个类别的每个视角，对每个视角的图像数量进行补齐，以达到最大数量。
+    然后将数据集进行划分，保存为json文件
     """
     from tqdm import tqdm
     from glob import glob
@@ -280,19 +292,25 @@ def align_office31(root):
     
     
 def generate_mvc_dataset(root, views):
+    """
+    生成多视图分类数据集。从给定的根目录下加载索引，然后根据视角数量(views)筛选出数据。
+    最后，将数据集划分为训练集和测试集，并保存为 .pth 文件。
+    """
     from collections import Counter
     from sklearn.model_selection import train_test_split
+    # 加载索引文件
     idx_pth = os.path.join(root, 'idx.pth')
     idx = torch.load(idx_pth)
-
+    # 统计每个类别的样本数量
     counter = Counter(idx)
     X = []
     Y = []
     for k, v in counter.items():
-        if v >= views:
-            fid = k[0]
-            target = k[1]
+        if v >= views: # 只考虑样本数量大于等于视图数的类别
+            fid = k[0] # 获取文件ID
+            target = k[1] # 获取目标类别
             files = []
+            # 遍历视图
             for i in range(v):
                 if os.path.isfile(os.path.join(root, 'images', target, f'{fid}_{i}.jpg')):
                     files.append(os.path.join('images', target, f'{fid}_{i}.jpg'))
@@ -344,6 +362,7 @@ def generate_deepfake_dataset(root):
 
 class EdgeMNISTDataset(torchvision.datasets.MNIST):
     """
+    创建带有原始视图和边缘视图的 EdgeMNIST 数据集。
     """
 
     def __init__(self,
@@ -358,8 +377,8 @@ class EdgeMNISTDataset(torchvision.datasets.MNIST):
 
     def __getitem__(self, idx):
 
-        img = self.data[idx]
-        img = Image.fromarray(img.numpy(), mode='L')
+        img = self.data[idx] # 获取原始图像数据
+        img = Image.fromarray(img.numpy(), mode='L') # 将原始图像数据转换为 PIL 图像对象
 
         # original-view transforms
         view0 = img
@@ -369,12 +388,16 @@ class EdgeMNISTDataset(torchvision.datasets.MNIST):
             view0 = self.transform(view0)
             view1 = self.transform(view1)
 
+        # 标签转换
         if self.target_transform is not None:
             target = self.target_transform(target)
         return [view0, view1], self.targets[idx]
 
 
 class EdgeFMNISTDataset(torchvision.datasets.FashionMNIST):
+    """
+    创建带有原始视图和边缘视图的 EdgeFMNIST 数据集。
+    """
 
     def __init__(self, root: str, train: bool = True,
                  transform=None,
