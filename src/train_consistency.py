@@ -51,6 +51,9 @@ def smartprint(*msg):
 
 @torch.no_grad()
 def valid_by_kmeans(val_dataloader, model, use_ddp, device):
+    '''
+    验证一致性表征在kmeans聚类任务上的指标
+    '''
     targets = []
     consist_reprs = []
 
@@ -101,10 +104,12 @@ def train_a_epoch(args, train_dataloader, model, epoch, device, optimizer, lr):
 
         for k, v in loss_parts.items():
             losses[k].append(v)    
-            
+        # 优化器梯度清零，需要手动清除上一批次积累的梯度    
         optimizer.zero_grad()
         loss.backward()
+        # 梯度裁剪，防止梯度爆炸
         torch.nn.utils.clip_grad_norm_(parameters, 1)
+        # 更新模型参数
         optimizer.step()
     
         show_losses = {k: np.mean(v) for k, v in losses.items()}
@@ -180,7 +185,7 @@ def main():
                                         drop_last=False,
                                         pin_memory=True)
             print('Dataset contains {}/{} train/val samples'.format(len(train_dataset), len(val_dataset)))
-        
+            # 获取一批验证样本用于重建
             dl = DataLoader(val_dataset, 16, shuffle=True)
             recon_samples = next(iter(dl))[0]
             recon_samples = [x.to(device, non_blocking=True) for x in recon_samples]
