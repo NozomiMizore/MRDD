@@ -51,6 +51,9 @@ def smartprint(*msg):
 
 @torch.no_grad()
 def valid_by_kmeans(val_dataloader, model, use_ddp, device):
+    """
+    验证一致性表征、视图特定表征、拼接表征在Kmeans聚类任务上的指标
+    """
     targets = []
     consist_reprs = []
     vspecific_reprs = []
