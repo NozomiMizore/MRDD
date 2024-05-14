@@ -16,10 +16,15 @@ def get_timestep_embedding(timesteps, embedding_dim):
 
     half_dim = embedding_dim // 2
     emb = math.log(10000) / (half_dim - 1)
+    # 生成一个从0到half_dim-1的等差数列，并乘以-emb，然后取指数
     emb = torch.exp(torch.arange(half_dim, dtype=torch.float32) * -emb)
     emb = emb.type_as(timesteps)
+    # 计算sin和cos嵌入
+    # 先将timesteps张量扩展到 [N, 1] 的形状，然后与 emb 相乘，结果为 [N, half_dim]
     emb = timesteps.float()[:, None] * emb[None, :]
+    # 拼接正弦和余弦嵌入，得到的张量形状为 [N, embedding_dim]
     emb = torch.cat([torch.sin(emb), torch.cos(emb)], dim=1)
+    # 如果 embedding_dim 是奇数，则在最后一列进行零填充
     if embedding_dim % 2 == 1:  # zero pad
         emb = torch.nn.functional.pad(emb, (0,1,0,0))
     return emb
@@ -31,7 +36,7 @@ def nonlinearity(x):
 
 
 def Normalize(in_channels, norm_name='batch'):
-    if norm_name == 'group':
+    if norm_name == 'group': # 将通道划分为32个组，组内进行归一化
         return torch.nn.GroupNorm(num_groups=32, num_channels=in_channels, eps=1e-6, affine=True)
     else:
         return torch.nn.BatchNorm2d(in_channels, eps=1e-6, affine=True)
@@ -50,6 +55,7 @@ class Upsample(nn.Module):
                                         padding=1)
                                         
     def forward(self, x):
+        # 使用最近邻插值方法上采样x
         x = torch.nn.functional.interpolate(x, scale_factor=self.stride, mode="nearest")
         if self.with_conv:
             x = self.conv(x)         
@@ -67,6 +73,7 @@ class Downsample(nn.Module):
                                         kernel_size=3,
                                         stride=2,
                                         padding=0)
+            # 在输入stride为4时创建第二个卷积层，进一步下采样
             if stride == 4:
                 self.conv_2 = torch.nn.Conv2d(in_channels,
                                         in_channels,
@@ -77,13 +84,14 @@ class Downsample(nn.Module):
 
     def forward(self, x):
         if self.with_conv:
+            # 在右方和下方填充常数0
             pad = (0,1,0,1)
             x = torch.nn.functional.pad(x, pad, mode="constant", value=0)
             x = self.conv(x)
             if self.stride == 4: 
                 x = torch.nn.functional.pad(x, pad, mode="constant", value=0)
                 x = self.conv_2(x)                
-        else:
+        else: # 使用平均池化进行下采样
             x = torch.nn.functional.avg_pool2d(x, kernel_size=self.stride, stride=self.stride)
         return x
 
