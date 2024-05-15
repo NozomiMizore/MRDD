@@ -105,23 +105,29 @@ class ResnetBlock(nn.Module):
         self.out_channels = out_channels
         self.use_conv_shortcut = conv_shortcut
 
+        # 标准化层1对输入特征进行标准化
         self.norm1 = Normalize(in_channels)
+        # 卷积层1: 通道数变为out_channels，其他维度尺寸保持不变
         self.conv1 = torch.nn.Conv2d(in_channels,
                                      out_channels,
                                      kernel_size=3,
                                      stride=1,
                                      padding=1)
+        # temb_proj线性层
         if temb_channels > 0:
             self.temb_proj = torch.nn.Linear(temb_channels,
                                              out_channels)
+        # 标准化层2    
         self.norm2 = Normalize(out_channels)
         self.dropout = torch.nn.Dropout(dropout)
+        # 卷积层2：各维度尺寸保持不变
         self.conv2 = torch.nn.Conv2d(out_channels,
                                      out_channels,
                                      kernel_size=3,
                                      stride=1,
                                      padding=1)
         if self.in_channels != self.out_channels:
+            # 两种conv_shortcut都将通道数改为out_channels，并保持其他维度尺寸不变
             if self.use_conv_shortcut:
                 self.conv_shortcut = torch.nn.Conv2d(in_channels,
                                                      out_channels,
@@ -137,31 +143,36 @@ class ResnetBlock(nn.Module):
 
     def forward(self, x, temb):
         h = x
+        # 第一个标准化和激活
         h = self.norm1(h)
         h = nonlinearity(h)
+        # 第一个卷积层
         h = self.conv1(h)
 
+        # 激活并线性映射时间步嵌入后加入到h中
         if temb is not None:
             h = h + self.temb_proj(nonlinearity(temb))[:,:,None,None]
-
+        # 第二个标准化和激活
         h = self.norm2(h)
         h = nonlinearity(h)
+        # dropout
         h = self.dropout(h)
+        # 第二个卷积层
         h = self.conv2(h)
 
+        # 如果输入通道数与输出通道数不同，使用conv_shortcut调整x的通道数
         if self.in_channels != self.out_channels:
             if self.use_conv_shortcut:
                 x = self.conv_shortcut(x)
             else:
                 x = self.nin_shortcut(x)
-
+        # 残差连接
         return x+h
 
 class AttnBlock(nn.Module):
     def __init__(self, in_channels):
         super().__init__()
         self.in_channels = in_channels
-
         self.norm = Normalize(in_channels)
         self.q = torch.nn.Conv2d(in_channels,
                                  in_channels,
@@ -194,32 +205,37 @@ class AttnBlock(nn.Module):
 
         # compute attention
         b,c,h,w = q.shape
-        q = q.reshape(b,c,h*w)
+
         q = q.permute(0,2,1)   # b,hw,c
         k = k.reshape(b,c,h*w) # b,c,hw
+        # 计算注意力权重矩阵
         w_ = torch.bmm(q,k)     # b,hw,hw    w[b,i,j]=sum_c q[b,i,c]k[b,c,j]
-        w_ = w_ * (int(c)**(-0.5))
-        w_ = torch.nn.functional.softmax(w_, dim=2)
+        w_ = w_ * (int(c)**(-0.5)) # 缩放
+        w_ = torch.nn.functional.softmax(w_, dim=2) # 在k的hw维度上进行softmax
 
         # attend to values
-        v = v.reshape(b,c,h*w)
+        v = v.reshape(b,c,h*w)   # b, c, hw
         w_ = w_.permute(0,2,1)   # b,hw,hw (first hw of k, second of q)
         h_ = torch.bmm(v,w_)     # b, c,hw (hw of q) h_[b,c,j] = sum_i v[b,c,i] w_[b,i,j]
         h_ = h_.reshape(b,c,h,w)
-
+        # 1×1卷积层进行投影
         h_ = self.proj_out(h_)
-
+        # 残差连接
         return x+h_
 
 class Encoder(nn.Module):
     def __init__(self, *, hidden_dim, in_channels, ch_mult=(1,2,4,8), num_res_blocks,
                  attn_resolutions, dropout=0.0, resamp_with_conv=True, 
                  resolution, z_channels, double_z=True, use_attn=False, **ignore_kwargs):
+        """
+        z_channels: 潜在空间的通道数
+        double_z: 是否输出双倍通道
+        """
         super().__init__()
         self.hidden_dim = hidden_dim
         self.temb_ch = 0
         self.num_resolutions = len(ch_mult)
-        self.num_res_blocks = num_res_blocks
+        self.num_res_blocks = num_res_blocks # 每个分辨率层的resnet块数
         self.resolution = resolution
         self.in_channels = in_channels
         self.use_attn = use_attn
@@ -230,21 +246,22 @@ class Encoder(nn.Module):
                                        stride=1,
                                        padding=1)
 
-        curr_res = resolution
+        curr_res = resolution # 当前分辨率
         in_ch_mult = (1,)+tuple(ch_mult)
-        self.down = nn.ModuleList()
+        self.down = nn.ModuleList() # 包含不同分辨率的下采样块
+        # 为每个分辨率层创建块
         for i_level in range(self.num_resolutions):
             block = nn.ModuleList()
             if self.use_attn:
                 attn = nn.ModuleList()
-            block_in = hidden_dim*in_ch_mult[i_level]
-            block_out = hidden_dim*ch_mult[i_level]
+            block_in = hidden_dim*in_ch_mult[i_level] # 当前层的输入通道数
+            block_out = hidden_dim*ch_mult[i_level] # 当前层的输出通道数
             for i_block in range(self.num_res_blocks):
                 block.append(ResnetBlock(in_channels=block_in,
                                          out_channels=block_out,
                                          temb_channels=self.temb_ch,
                                          dropout=dropout))
-                block_in = block_out
+                block_in = block_out  # 更新输入通道数
                 if self.use_attn:
                     if curr_res in attn_resolutions:
                         attn.append(AttnBlock(block_in))
@@ -253,8 +270,8 @@ class Encoder(nn.Module):
             if self.use_attn:
                 down.attn = attn
             if i_level != self.num_resolutions-1:
-                down.downsample = Downsample(block_in, resamp_with_conv)
-                curr_res = curr_res // 2
+                down.downsample = Downsample(block_in, resamp_with_conv) # 下采样层
+                curr_res = curr_res // 2 # 更新当前分辨率
             self.down.append(down)
 
         # middle
@@ -322,7 +339,7 @@ class Decoder(nn.Module):
         self.num_res_blocks = num_res_blocks
         self.resolution = resolution
         self.in_channels = in_channels
-        self.give_pre_end = give_pre_end
+        self.give_pre_end = give_pre_end # 是否直接返回中间特征
         self.use_attn = use_attn
         # compute in_ch_mult, block_in and curr_res at lowest res
         in_ch_mult = (1,)+tuple(ch_mult)
@@ -433,14 +450,23 @@ if __name__ == '__main__':
     to_dist = nn.Linear(10*8*8, 200)
     to_decoder_input = nn.Linear(100+10, 11*8*8)
     latent = encoder(x)
+    print(latent.shape) # [10, 10, 8, 8]
     latent = torch.flatten(latent, start_dim=1)
+    print(latent.shape) # [10, 640]
     z = to_dist(latent)
-    mu, logvar = torch.split(z, 100, dim=1)
+    print(z.shape) # [10, 200]
+    mu, logvar = torch.split(z, 100, dim=1) # 均值和对数方差
+    print(mu.shape) # [10, 100]
+    print(logvar.shape) # [10, 100]
     std = torch.exp(0.5 * logvar)
-    eps = torch.randn_like(std)
-    new_z = eps * std + mu
+    eps = torch.randn_like(std) # 从标准正态分布中采样的噪声
+    new_z = eps * std + mu # 线性变换得到所需分布
+    print(new_z.shape) # [10, 100]
     y = torch.rand(10, 10)
     new_z = torch.cat([new_z, y], dim=1)
+    print(new_z.shape) # [10, 110]
     new_z = to_decoder_input(new_z).view(-1, 11, 8, 8)
+    print(new_z.shape) # [10, 11, 8, 8]
     x_recon = decoder(new_z)
-    print(latent.shape, z.shape, x_recon.shape)
+    print(x_recon.shape) # [10, 1, 32, 32]
+    # print(latent.shape, z.shape, x_recon.shape)

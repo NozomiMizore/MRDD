@@ -438,7 +438,7 @@ model_dict = {
 
 if __name__ == '__main__':
 
-    model = resnet18(in_channel=1, output_layer=6)
+    model = resnext50_32x4d(in_channel=1, output_layer=6)
     data = torch.randn(2, 1, 32, 32)
     out = model(data)
     print(out.shape)

@@ -25,6 +25,19 @@ class ConsistencyAE(nn.Module):
                  alpha=0.5,
                  categorical_dim=10) -> None:
         """
+        basic_hidden_dim (int): 基本隐层维度
+        c_dim (int): 一致性表征维度
+        continous (bool): 是否连续
+        in_channel (int): 输入通道数
+        num_res_blocks (int): 残差块的数量
+        ch_mult (list of int): 不同分辨率级别的通道倍增器
+        block_size (int): 每个块的大小
+        latent_ch (int): 隐空间中的通道数量
+        temperature (float): Gumbel-Softmax 的温度参数
+        kld_weight (float): KL 散度损失的权重
+        views (int): 视图数量
+        alpha (float): 重建损失的权重参数
+        categorical_dim (int): 类别维度
         """
         super().__init__()
 
