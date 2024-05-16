@@ -18,7 +18,7 @@ Run view specificity 3
 [Clustering] acc: 0.5237 (0.0118) | nmi: 0.7712 (0.0043)     | ari: 0.4295 (0.0087)
 [Classification] acc: 0.8333 (0.0156) | fscore: 0.8018 (0.0244)     | p: 0.8180 (0.0255) 
 
-
+# 聚类acc比原文低2个点左右，分类acc和原文差不多
 Use: cuda:0
 Run consist...
 [Clustering] acc: 0.6325 (0.0170) | nmi: 0.8430 (0.0038)     | ari: 0.5565 (0.0154)
