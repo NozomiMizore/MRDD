@@ -1,0 +1,42 @@
+# c20
+Use: cuda:0
+Run consist...
+[Clustering] acc: 0.1859 (0.0079) | nmi: 0.2546 (0.0061)     | ari: 0.0644 (0.0034)
+[Classification] acc: 0.4769 (0.0165) | fscore: 0.4682 (0.0187)     | p: 0.4989 (0.0193) 
+Run best concat z...
+[Clustering] acc: 0.1893 (0.0071) | nmi: 0.2346 (0.0044)     | ari: 0.0631 (0.0033)
+[Classification] acc: 0.3714 (0.0208) | fscore: 0.3540 (0.0203)     | p: 0.3774 (0.0182) 
+Run all concat z...
+[Clustering] acc: 0.2126 (0.0071) | nmi: 0.2772 (0.0076)     | ari: 0.0835 (0.0055)
+[Classification] acc: 0.4412 (0.0250) | fscore: 0.4212 (0.0207)     | p: 0.4346 (0.0203) 
+Run view specificity 1
+[Clustering] acc: 0.1866 (0.0097) | nmi: 0.2295 (0.0050)     | ari: 0.0612 (0.0033)
+[Classification] acc: 0.3171 (0.0114) | fscore: 0.2968 (0.0096)     | p: 0.3136 (0.0103) 
+Run view specificity 2
+[Clustering] acc: 0.1923 (0.0065) | nmi: 0.2659 (0.0056)     | ari: 0.0702 (0.0040)
+[Classification] acc: 0.3867 (0.0192) | fscore: 0.3660 (0.0165)     | p: 0.3812 (0.0185) 
+Run view specificity 3
+[Clustering] acc: 0.1854 (0.0057) | nmi: 0.2460 (0.0039)     | ari: 0.0635 (0.0021)
+[Classification] acc: 0.3574 (0.0229) | fscore: 0.3459 (0.0211)     | p: 0.3657 (0.0252
+
+
+# c10
+Use: cuda:0
+Run consist...
+[Clustering] acc: 0.1765 (0.0044) | nmi: 0.2293 (0.0041)     | ari: 0.0545 (0.0019)
+[Classification] acc: 0.3166 (0.0154) | fscore: 0.3047 (0.0143)     | p: 0.3301 (0.0148) 
+Run best concat z...
+[Clustering] acc: 0.1648 (0.0062) | nmi: 0.2180 (0.0046)     | ari: 0.0505 (0.0026)
+[Classification] acc: 0.3973 (0.0197) | fscore: 0.3804 (0.0203)     | p: 0.3986 (0.0214) 
+Run all concat z...
+[Clustering] acc: 0.1693 (0.0086) | nmi: 0.2250 (0.0049)     | ari: 0.0521 (0.0031)
+[Classification] acc: 0.3867 (0.0107) | fscore: 0.3698 (0.0118)     | p: 0.3897 (0.0144) 
+Run view specificity 1
+[Clustering] acc: 0.1623 (0.0047) | nmi: 0.2060 (0.0041)     | ari: 0.0459 (0.0021)
+[Classification] acc: 0.2985 (0.0204) | fscore: 0.2813 (0.0207)     | p: 0.2955 (0.0227) 
+Run view specificity 2
+[Clustering] acc: 0.1675 (0.0061) | nmi: 0.2182 (0.0035)     | ari: 0.0495 (0.0018)
+[Classification] acc: 0.3277 (0.0242) | fscore: 0.3088 (0.0219)     | p: 0.3204 (0.0255) 
+Run view specificity 3
+[Clustering] acc: 0.1645 (0.0043) | nmi: 0.2189 (0.0046)     | ari: 0.0489 (0.0024)
+[Classification] acc: 0.3104 (0.0213) | fscore: 0.2962 (0.0205)     | p: 0.3156 (0.0198) 

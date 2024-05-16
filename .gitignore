@@ -32,6 +32,7 @@ MANIFEST
 *.manifest
 *.spec
 *.pth
+*.pkl
 # Installer logs
 pip-log.txt
 pip-delete-this-directory.txt
@@ -169,7 +170,6 @@ activate_env
 *.npz
 src/data/
 src/MyData/
-src/experiments
 todo.md
 src/vis_single_embedding.py
 src/local_test.py

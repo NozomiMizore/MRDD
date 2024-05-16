@@ -4,9 +4,9 @@ seed: 3407
 wandb: True
 experiment_name: "emnist"
 verbose: false
-note: 'disentangling'
+note: 'eval'
 project_name: 'CVPR24'
-runtimes: 1
+runtimes: 10
 backbone:
   type: 'cnn'
   init_method: 'xavier'

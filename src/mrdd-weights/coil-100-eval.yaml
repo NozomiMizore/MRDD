@@ -5,7 +5,7 @@ wandb: false
 experiment_name: "coil100"
 verbose: false
 project_name: 'CVPR24'
-runtimes: 1
+runtimes: 10
 backbone:
   type: 'cnn'
   init_method: 'xavier'

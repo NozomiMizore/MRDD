@@ -17,3 +17,23 @@ Run view specificity 2
 Run view specificity 3
 [Clustering] acc: 0.5156 (0.0240) | nmi: 0.6373 (0.0178)     | ari: 0.3787 (0.0205)
 [Classification] acc: 0.8299 (0.0531) | fscore: 0.8302 (0.0473)     | p: 0.8376 (0.0422) 
+
+Use: cuda:0
+Run consist...
+[Clustering] acc: 0.6010 (0.0162) | nmi: 0.7409 (0.0084)     | ari: 0.5166 (0.0122)
+[Classification] acc: 0.8961 (0.0349) | fscore: 0.8915 (0.0391)     | p: 0.9031 (0.0384) 
+Run best concat z...
+[Clustering] acc: 0.6458 (0.0354) | nmi: 0.7830 (0.0178)     | ari: 0.5677 (0.0270)
+[Classification] acc: 0.9494 (0.0275) | fscore: 0.9433 (0.0294)     | p: 0.9559 (0.0212) 
+Run all concat z...
+[Clustering] acc: 0.6781 (0.0347) | nmi: 0.8060 (0.0166)     | ari: 0.6083 (0.0451)
+[Classification] acc: 0.9610 (0.0142) | fscore: 0.9515 (0.0264)     | p: 0.9561 (0.0291) 
+Run view specificity 1
+[Clustering] acc: 0.5477 (0.0185) | nmi: 0.6867 (0.0121)     | ari: 0.4235 (0.0126)
+[Classification] acc: 0.8857 (0.0464) | fscore: 0.8788 (0.0372)     | p: 0.8900 (0.0351) 
+Run view specificity 2
+[Clustering] acc: 0.5099 (0.0314) | nmi: 0.6539 (0.0163)     | ari: 0.3882 (0.0243)
+[Classification] acc: 0.8779 (0.0308) | fscore: 0.8667 (0.0304)     | p: 0.8864 (0.0382) 
+Run view specificity 3
+[Clustering] acc: 0.4963 (0.0208) | nmi: 0.6427 (0.0110)     | ari: 0.3704 (0.0183)
+[Classification] acc: 0.8403 (0.0313) | fscore: 0.8099 (0.0383)     | p: 0.8270 (0.0384) 

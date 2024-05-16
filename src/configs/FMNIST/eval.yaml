@@ -4,9 +4,9 @@ seed: 3407
 wandb: True
 experiment_name: "fmnist"
 verbose: false
-note: 'disentangling'
+note: 'eval'
 project_name: 'CVPR24'
-runtimes: 5
+runtimes: 10
 backbone:
   type: 'cnn'
   init_method: 'xavier'
@@ -61,5 +61,5 @@ valid_augmentation:
 
 
 eval:
-  model_path: './experiments/fmnist/disent-m0.8-c10-v10/final_model-3407.pth'
+  model_path: './experiments/fmnist/disent-m0.7-c10-v10/final_model-3407.pth'
 

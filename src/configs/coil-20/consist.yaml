@@ -23,7 +23,7 @@ train:
   optim: "adamw"
   num_workers: 8
   lr: 0.0005
-  evaluate: 1
+  evaluate: 1 # evaluate的间隔
   use_ddp: false
   scheduler: 'consine'
   samples_num: 8
@@ -33,7 +33,8 @@ train:
 
 consistency:
   continous: True
-  c_dim: 20
+  # c_dim: 20
+  c_dim: 10
   in_channel: 1
   ch_mult: [1, 2, 4, 8]
   block_size: 8
