@@ -16,6 +16,7 @@ Run view specificity 2
 [Clustering] acc: 0.3678 (0.0063) | nmi: 0.3412 (0.0041)     | ari: 0.1976 (0.0064)
 [Classification] acc: 0.6843 (0.0031) | fscore: 0.6799 (0.0030)     | p: 0.6813 (0.0029)
 
+# c10 c指标比原文略高一点点，cs指标聚类低了12个点，分类低了7个点
 Use: cuda:0
 Run consist...
 [Clustering] acc: 0.5092 (0.0197) | nmi: 0.5505 (0.0107)     | ari: 0.3803 (0.0154)
