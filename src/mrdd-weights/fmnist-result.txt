@@ -1,34 +1,17 @@
+# 聚类acc比原文低2-3个点，分类acc基本一致
 Use: cuda:0
 Run consist...
-[Clustering] acc: 0.3605 (0.0190) | nmi: 0.3407 (0.0090)     | ari: 0.1876 (0.0100)
-[Classification] acc: 0.6880 (0.0032) | fscore: 0.6836 (0.0028)     | p: 0.6853 (0.0028) 
+[Clustering] acc: 0.4785 (0.0033) | nmi: 0.5350 (0.0059)     | ari: 0.3546 (0.0057)
+[Classification] acc: 0.8274 (0.0026) | fscore: 0.8250 (0.0020)     | p: 0.8256 (0.0020) 
 Run best concat z...
-[Clustering] acc: 0.3913 (0.0108) | nmi: 0.3699 (0.0101)     | ari: 0.2153 (0.0129)
-[Classification] acc: 0.7213 (0.0036) | fscore: 0.7170 (0.0032)     | p: 0.7181 (0.0033) 
+[Clustering] acc: 0.5573 (0.0335) | nmi: 0.5947 (0.0187)     | ari: 0.4294 (0.0284)
+[Classification] acc: 0.8745 (0.0021) | fscore: 0.8731 (0.0020)     | p: 0.8732 (0.0021) 
 Run all concat z...
-[Clustering] acc: 0.3775 (0.0112) | nmi: 0.3736 (0.0066)     | ari: 0.2176 (0.0124)
-[Classification] acc: 0.7230 (0.0032) | fscore: 0.7186 (0.0033)     | p: 0.7204 (0.0034) 
+[Clustering] acc: 0.5727 (0.0307) | nmi: 0.5985 (0.0148)     | ari: 0.4425 (0.0215)
+[Classification] acc: 0.8875 (0.0029) | fscore: 0.8869 (0.0030)     | p: 0.8869 (0.0031) 
 Run view specificity 1
-[Clustering] acc: 0.3940 (0.0085) | nmi: 0.3747 (0.0033)     | ari: 0.2255 (0.0117)
-[Classification] acc: 0.6873 (0.0042) | fscore: 0.6823 (0.0036)     | p: 0.6848 (0.0038) 
+[Clustering] acc: 0.5924 (0.0214) | nmi: 0.5991 (0.0156)     | ari: 0.4588 (0.0156)
+[Classification] acc: 0.8328 (0.0028) | fscore: 0.8301 (0.0025)     | p: 0.8304 (0.0024) 
 Run view specificity 2
-[Clustering] acc: 0.3668 (0.0102) | nmi: 0.3369 (0.0042)     | ari: 0.1952 (0.0086)
-[Classification] acc: 0.6868 (0.0039) | fscore: 0.6815 (0.0040)     | p: 0.6830 (0.0036) 
-
-# 聚类acc比原文低10+点，分类acc比原文低15个点
-Use: cuda:0
-Run consist...
-[Clustering] acc: 0.3614 (0.0143) | nmi: 0.3399 (0.0064)     | ari: 0.1887 (0.0091)
-[Classification] acc: 0.6857 (0.0033) | fscore: 0.6811 (0.0028)     | p: 0.6826 (0.0028) 
-Run best concat z...
-[Clustering] acc: 0.3956 (0.0088) | nmi: 0.3719 (0.0081)     | ari: 0.2186 (0.0083)
-[Classification] acc: 0.7213 (0.0039) | fscore: 0.7171 (0.0033)     | p: 0.7183 (0.0033) 
-Run all concat z...
-[Clustering] acc: 0.3843 (0.0132) | nmi: 0.3769 (0.0031)     | ari: 0.2270 (0.0121)
-[Classification] acc: 0.7239 (0.0020) | fscore: 0.7194 (0.0021)     | p: 0.7215 (0.0023) 
-Run view specificity 1
-[Clustering] acc: 0.3920 (0.0096) | nmi: 0.3666 (0.0111)     | ari: 0.2158 (0.0146)
-[Classification] acc: 0.6883 (0.0042) | fscore: 0.6822 (0.0034)     | p: 0.6847 (0.0037) 
-Run view specificity 2
-[Clustering] acc: 0.3614 (0.0076) | nmi: 0.3396 (0.0078)     | ari: 0.1949 (0.0092)
-[Classification] acc: 0.6850 (0.0044) | fscore: 0.6802 (0.0042)     | p: 0.6818 (0.0042) 
+[Clustering] acc: 0.5879 (0.0137) | nmi: 0.5568 (0.0012)     | ari: 0.4093 (0.0063)
+[Classification] acc: 0.8287 (0.0033) | fscore: 0.8272 (0.0034)     | p: 0.8269 (0.0034) 
