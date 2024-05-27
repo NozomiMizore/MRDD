@@ -84,3 +84,7 @@ And fill in the path of pretrained model to `model_path` domain.
 }
 ```
 
+## 复现结果
+src/MyData里面是五个数据集
+src/experiments里面是每个数据集上重头训练得到的复现结果，其中origin_metric_res是原文给出的指标
+src/mrdd-weights里面是作者给出的训练好的模型文件在本地跑出的指标结果
