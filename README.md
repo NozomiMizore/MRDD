@@ -1,9 +1,6 @@
 # MRDD
+在本仓库代码的基础上进行了《智能计算实践课程》要求的复现与改进工作。
 The official repos for "Rethinking Multi-view Representation Learning via Distilled Disentangling" (MRDD)
-
-[[ArXiv]](https://arxiv.org/abs/2403.10897)
-
-:fire:**NOTE**:fire: I am really interested in "how to predict the missing view/modality via disentangling representations.". Please contact me if you have any potential ideas or if you want to discuss this topic with me. Thanks. ( guanzhouk [at] gmail.com or guanzhouk [at] bjtu.edu.cn both could find me. ) If you are also BJTU's student, you could directly face-to-face with me. 
 
 ## Abstract
 
@@ -15,55 +12,6 @@ This approach significantly reduces redundancy between view-consistent and view-
 ![framework](./imgs/framework.png)
 
 - Status:  Accepted at CVPR 2024 (Poster).
-
-
-## Training step
-
-We show that how `MRDD` train on the `EdgeMnist` dataset.
-
-
-1. train the consistent encoder.
-
-We provide two ways to train the consistent encoder. First one is using distributed training manner:
-
-
-```
-torchrun --nproc_per_node=[GPU NUMS] --master-port=[PORT] train_consistency.py  -f [config file]`
-```
-
-In this setting, you should enable the term `use_ddp` in config file's `train` domain. As the same time, you could fill in the `devices` domain to declare how many GPUs that you want to use in training.
-
-We also provide the single gpu version:
-```
-python train_consistency.py  -f [config file]
-```
-
-Also, you should disable the term `use_ddp`.
-
-
-2. train the disentangling module.
-
-For DDP:
-```
-torchrun --nproc_per_node=[GPU NUMS] --master-port=[PORT] train_disentangle.py  -f [config file]`
-```
-For single:
-```
-python train_disentangle.py  -f [config file]
-```
-
-
-
-## Validation
-
-Note: you can find the pre-train weigths at [here](https://drive.google.com/file/d/1ihSw5NpUGdgEUEYKvZuLCo_hp3uJ26Yr/view?usp=sharing).  
-
-
-```
-python eval.py -f ./configs/dataset name/eval.yaml
-```
-
-And fill in the path of pretrained model to `model_path` domain.
 
 ## Citation
 
@@ -83,8 +31,3 @@ And fill in the path of pretrained model to `model_path` domain.
   year={2024}
 }
 ```
-
-## 复现结果
-- src/MyData里面是五个数据集
-- src/experiments里面是每个数据集上重头训练得到的复现结果，其中origin_metric_res是原文给出的指标
-- src/mrdd-weights里面是作者给出的训练好的模型文件在本地跑出的指标结果
